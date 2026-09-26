@@ -4,8 +4,9 @@ Usage:
     python pipeline.py --month 2025-10
     python pipeline.py --month 2025-10 --force     # re-download even if a good pull exists
 
-Exit codes: 0 = success or degraded, 1 = halted (critical source failed/incomplete, or too many
-rows failing critical validation rules). Ingest and validate exist so far.
+Exit codes: 0 = success or degraded, 1 = halted (critical source failed/incomplete, too many
+rows failing critical validation rules, or model integrity checks failed).
+Ingest, validate and model exist so far.
 """
 import argparse
 import logging
@@ -15,6 +16,7 @@ from datetime import datetime, timezone
 from src.config import REPO_ROOT, load_config, month_bounds, school_year_for_month
 from src.ingest.common import IngestError
 from src.ingest.stage import run_ingest
+from src.model import ModelError, run_model
 from src.utils.http import HTTPFailure
 from src.utils.logging_setup import setup_logging
 from src.validate.stage import ValidationHalt, run_validate
@@ -52,14 +54,21 @@ def main(argv=None):
     log.info("ingest finished: %s", status.upper())
 
     try:
-        run_validate(args.month, results, config, REPO_ROOT / config["paths"]["processed"],
-                     REPO_ROOT / config["paths"]["output"])
+        validated = run_validate(args.month, results, config, REPO_ROOT / config["paths"]["processed"],
+                                 REPO_ROOT / config["paths"]["output"])
     except ValidationHalt as e:
         log.error("HALTED in validate: %s", e)
         log.info("log: %s", log_path)
         return 1
 
-    log.info("finished: %s | model/metrics stages not implemented yet | log: %s", status.upper(), log_path)
+    try:
+        run_model(args.month, results, validated["validated_path"], REPO_ROOT / config["paths"]["warehouse"])
+    except ModelError as e:
+        log.error("HALTED in model (load rolled back): %s", e)
+        log.info("log: %s", log_path)
+        return 1
+
+    log.info("finished: %s | metrics stage not implemented yet | log: %s", status.upper(), log_path)
     return 0
 
 

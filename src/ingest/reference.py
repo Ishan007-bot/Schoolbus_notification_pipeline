@@ -22,7 +22,7 @@ log = logging.getLogger("ingest.reference")
 # Column names as they appear in the CSV header (they differ from the API field names).
 REQUIRED_COLUMNS = {
     "routes": ["School_Year", "Route_Number", "Service_Type", "Vendor_Code", "Vendor_Name"],
-    "sites": ["School_Year", "OPT_Code", "Name", "Site_Type", "Latitude", "Longitude"],
+    "sites": ["School_Year", "OPT_Code", "Name", "Site_Type", "City", "Latitude", "Longitude"],
 }
 
 

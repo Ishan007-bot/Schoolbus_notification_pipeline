@@ -4,11 +4,11 @@ from src.ingest.reference import ingest_reference, load_reference
 from src.utils.http import HTTPFailure
 from tests.conftest import FakeResponse
 
-HEADER = "School_Year,OPT_Code,Name,Site_Type,Latitude,Longitude\n"
+HEADER = "School_Year,OPT_Code,Name,Site_Type,City,Latitude,Longitude\n"
 
 
 def sites_csv(year_rows, year="2025-2026"):
-    lines = [f"{year},{i:05d},School {i},School,40.7,-74.0" for i in range(year_rows)]
+    lines = [f"{year},{i:05d},School {i},School,Brooklyn,40.7,-74.0" for i in range(year_rows)]
     return (HEADER + "\n".join(lines) + "\n").encode()
 
 

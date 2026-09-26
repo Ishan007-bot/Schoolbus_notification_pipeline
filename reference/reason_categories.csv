@@ -1,0 +1,11 @@
+reason,category,rationale
+Mechanical Problem,vendor_controllable,vehicle maintenance is the vendor's responsibility
+Won`t Start,vendor_controllable,vehicle maintenance is the vendor's responsibility
+Flat Tire,vendor_controllable,vehicle maintenance is the vendor's responsibility
+Problem Run,route_design,NYC Council links problem runs to poorly designed routes; OPT designs routes
+Heavy Traffic,external,outside the vendor's control on the day
+Weather Conditions,external,outside the vendor's control (checked against real weather by V12)
+Accident,external,fault not recorded; treated as external to avoid blaming without evidence
+Delayed by School,external,caused by the school
+Late return from Field Trip,external,caused by the trip schedule
+Other,unknown,no information
