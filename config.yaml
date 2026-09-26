@@ -1,0 +1,43 @@
+# All URLs, thresholds and paths live here so the code has no magic numbers.
+
+sources:
+  incidents:            # S1 - Bus Breakdown and Delays (vendor self-reported)
+    dataset_id: ez4e-fazm
+    api_url: https://data.cityofnewyork.us/resource/ez4e-fazm.json
+    page_size: 50000
+  routes:               # S2 - route -> vendor per school year
+    dataset_id: 8yac-vygm
+    csv_url: https://data.cityofnewyork.us/api/views/8yac-vygm/rows.csv?accessType=DOWNLOAD
+  sites:                # S3 - transportation sites (schools)
+    dataset_id: hg3c-2jsy
+    csv_url: https://data.cityofnewyork.us/api/views/hg3c-2jsy/rows.csv?accessType=DOWNLOAD
+  weather:              # S4 - Open-Meteo historical, single NYC point
+    api_url: https://archive-api.open-meteo.com/v1/archive
+    latitude: 40.71
+    longitude: -74.01
+    timezone: America/New_York
+    hourly: [precipitation, snowfall, temperature_2m]
+
+http:
+  timeout_seconds: 60
+  retries: 3
+  backoff_seconds: [2, 4, 8]
+
+validation:
+  halt_if_critical_fail_pct: 25      # stop the run if more than this % of rows fail a critical rule
+  max_logging_lag_hours: 24          # V03 warning
+  delay_minutes_range: [1, 180]      # V07 warning
+  students_on_bus_range: [0, 72]     # V10 warning
+  reference_rowcount_tolerance_pct: 20
+
+metrics:
+  min_incidents_per_vendor: 30       # vendors below this are not ranked
+  audit_trust_score_below_pct: 90
+  audit_quartile: 0.25
+
+paths:
+  raw: data/raw
+  processed: data/processed
+  output: data/output
+  warehouse: data/warehouse.duckdb
+  logs: logs
