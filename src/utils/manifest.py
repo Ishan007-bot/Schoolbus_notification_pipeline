@@ -48,12 +48,17 @@ def write_manifest(manifest, logs_dir, output_dir, root=REPO_ROOT):
     return [str(p) for p in written]
 
 
-def code_version():
-    """Git commit the run used, and whether there were uncommitted changes."""
+def code_version(repo=REPO_ROOT):
+    """Git commit the run used, and whether there were uncommitted changes.
+
+    data/output/ is excluded from the dirty check: those files are the pipeline's own results, and
+    a backfill rewrites them as it goes - otherwise every month after the first would look dirty.
+    """
     def git(*args):
-        return subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True, text=True, timeout=5).stdout.strip()
+        return subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True, timeout=5).stdout.strip()
     try:
-        return {"commit": git("rev-parse", "--short", "HEAD") or None, "dirty": bool(git("status", "--porcelain"))}
+        changes = git("status", "--porcelain", "--", ".", ":(exclude)data/output")
+        return {"commit": git("rev-parse", "--short", "HEAD") or None, "dirty": bool(changes)}
     except (OSError, subprocess.SubprocessError):
         return {"commit": None, "dirty": None}
 

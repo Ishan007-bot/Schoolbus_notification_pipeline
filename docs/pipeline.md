@@ -6,7 +6,7 @@
 python pipeline.py --month 2025-10                  # one month
 python pipeline.py --month 2025-10 --force          # re-download even if a good pull exists
 python pipeline.py --range 2024-09 2026-06          # backfill; also writes the cross-month summary
-pytest                                              # 142 tests, no network needed
+pytest                                              # 145 tests, no network needed
 ```
 
 Exit code 0 = every month succeeded or ran degraded; 1 = at least one month halted.
@@ -81,14 +81,15 @@ month    status    halted    incidents      M1  audit
 
 Every run writes a JSON manifest per month: status, stage where it halted and the error, degraded and scope notes,
 each source's status, rows and checks, every rule's count, the model's integrity checks, output paths, the git commit
-(and whether there were uncommitted changes) and a hash of `config.yaml`. Paths are relative to the project.
+(and whether there were uncommitted code changes — the pipeline's own `data/output/` files don't count) and a hash of
+`config.yaml`. Paths are relative to the project.
 
 - `logs/manifests/run_<run_id>_<month>.json` — every run, including failures
 - `data/output/<month>/run_manifest.json` — only when outputs were produced, so it always describes the files next to it
 
 ## Tests
 
-`pytest` runs 142 tests in under a minute without network access: config helpers, HTTP retries, each source's
+`pytest` runs 145 tests in under a minute without network access: config helpers, HTTP retries, each source's
 completeness checks, the delay parser (including all 1,922 real legacy spellings), every validation rule, the model
 (rerun, rollback, bridge, duplicates), the metrics and audit rule, and end-to-end runs against a fake internet (success,
 rerun, forced rerun, API down, weather down, failed rerun keeps old outputs, backfill with a bad month, summer month,
