@@ -1,17 +1,17 @@
 {
-  "run_id": "20260926T203312Z",
+  "run_id": "20260926T204240Z",
   "period": "2026-02",
   "school_year": "2025-2026",
   "force": false,
-  "started_at": "2026-09-26T20:34:54+00:00",
-  "finished_at": "2026-09-26T20:35:02+00:00",
+  "started_at": "2026-09-26T20:45:23+00:00",
+  "finished_at": "2026-09-26T20:45:35+00:00",
   "status": "success",
   "halted_stage": null,
   "error": null,
   "notes": [],
   "scope_notes": [],
   "code_version": {
-    "commit": "147a95e",
+    "commit": "8f75dd4",
     "dirty": true
   },
   "config_sha256": "0c5b9eb80e54df10",
@@ -85,7 +85,7 @@
     },
     "weather": {
       "source": "weather",
-      "status": "ok",
+      "status": "reused",
       "rows": 744,
       "raw_dir": "data/raw/weather/2026-02/20260926T203312Z",
       "checks": {
@@ -98,7 +98,7 @@
           "detail": "0 missing values"
         }
       },
-      "message": ""
+      "message": "reused run 20260926T203312Z"
     }
   },
   "validation": {
@@ -184,12 +184,12 @@
     "period_rows": 10135,
     "duplicates_skipped": 0,
     "table_counts": {
-      "fact_incident": 131051,
-      "bridge_incident_site": 336692,
+      "fact_incident": 162766,
+      "bridge_incident_site": 422193,
       "dim_vendor": 60,
       "dim_route": 20707,
       "dim_site": 12892,
-      "dim_hour": 13104,
+      "dim_hour": 16032,
       "dim_reason": 10
     },
     "unmapped_reasons": [],
