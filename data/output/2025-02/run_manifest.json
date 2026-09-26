@@ -1,18 +1,18 @@
 {
-  "run_id": "20260926T204240Z",
+  "run_id": "20260926T205229Z",
   "period": "2025-02",
   "school_year": "2024-2025",
   "force": false,
-  "started_at": "2026-09-26T20:43:27+00:00",
-  "finished_at": "2026-09-26T20:43:37+00:00",
+  "started_at": "2026-09-26T20:53:23+00:00",
+  "finished_at": "2026-09-26T20:53:31+00:00",
   "status": "success",
   "halted_stage": null,
   "error": null,
   "notes": [],
   "scope_notes": [],
   "code_version": {
-    "commit": "8f75dd4",
-    "dirty": true
+    "commit": "002178f",
+    "dirty": false
   },
   "config_sha256": "0c5b9eb80e54df10",
   "sources": {
