@@ -1,19 +1,20 @@
 {
-  "run_id": "20260926T201023Z",
+  "run_id": "20260926T203312Z",
   "period": "2025-10",
   "school_year": "2025-2026",
   "force": false,
-  "started_at": "2026-09-26T20:10:23+00:00",
-  "finished_at": "2026-09-26T20:10:32+00:00",
+  "started_at": "2026-09-26T20:34:27+00:00",
+  "finished_at": "2026-09-26T20:34:37+00:00",
   "status": "success",
   "halted_stage": null,
   "error": null,
   "notes": [],
+  "scope_notes": [],
   "code_version": {
-    "commit": "1909c3c",
+    "commit": "147a95e",
     "dirty": true
   },
-  "config_sha256": "7e226cc4068654a0",
+  "config_sha256": "0c5b9eb80e54df10",
   "sources": {
     "incidents": {
       "source": "incidents",
@@ -84,20 +85,20 @@
     },
     "weather": {
       "source": "weather",
-      "status": "reused",
-      "rows": 744,
-      "raw_dir": "data/raw/weather/2025-10/20260926T193344Z",
+      "status": "ok",
+      "rows": 816,
+      "raw_dir": "data/raw/weather/2025-10/20260926T203312Z",
       "checks": {
         "hour_count": {
           "passed": true,
-          "detail": "744 hours, expected 744"
+          "detail": "816 hours, expected 816"
         },
         "precipitation_complete": {
           "passed": true,
           "detail": "0 missing values"
         }
       },
-      "message": "reused run 20260926T193344Z"
+      "message": ""
     }
   },
   "validation": {
@@ -182,12 +183,12 @@
     "period_rows": 9176,
     "duplicates_skipped": 0,
     "table_counts": {
-      "fact_incident": 22836,
-      "bridge_incident_site": 57202,
-      "dim_vendor": 85,
+      "fact_incident": 93808,
+      "bridge_incident_site": 239859,
+      "dim_vendor": 59,
       "dim_route": 20707,
       "dim_site": 12892,
-      "dim_hour": 1488,
+      "dim_hour": 10224,
       "dim_reason": 10
     },
     "unmapped_reasons": [],

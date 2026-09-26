@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.config import month_bounds, school_year_for_month
+from src.config import is_summer, month_bounds, school_year_for_month
 from src.ingest.incidents import load_incidents
 from src.ingest.reference import load_reference
 from src.ingest.weather import load_weather
@@ -38,8 +38,8 @@ def run_validate(month, ingest_results, cfg, processed_root, output_root, now=No
 
     weather_daily = None
     if ingest_results["weather"].status in USABLE:
-        hourly = load_weather(ingest_results["weather"].raw_dir)
-        weather_daily = hourly.assign(date=hourly["time"].str[:10]).groupby("date")[["precipitation", "snowfall"]].sum()
+        weather_daily = daily_weather(load_weather(ingest_results["weather"].raw_dir),
+                                      cfg["validation"]["snow_lookback_days"])
 
     routes_year = routes[routes["School_Year"] == school_year] if routes is not None else None
     sites_year = sites[sites["School_Year"] == school_year] if sites is not None else None
@@ -51,7 +51,10 @@ def run_validate(month, ingest_results, cfg, processed_root, output_root, now=No
         "weather_daily": weather_daily,
     }
 
-    df = prepare_incidents(raw, routes, school_year)
+    use_contracts = not is_summer(month)
+    if not use_contracts:
+        log.info("summer month: vendors attributed by reported company name, not school-year route contracts")
+    df = prepare_incidents(raw, routes, school_year, use_route_contracts=use_contracts)
     df, report = apply_rules(df, ctx)
 
     total, invalid = len(df), int((~df["is_valid"]).sum())
@@ -84,6 +87,14 @@ def run_validate(month, ingest_results, cfg, processed_root, output_root, now=No
     return {"rows": total, "valid": total - invalid, "critical_pct": critical_pct, "rules": rules,
             "vendor_attribution": {k: int(v) for k, v in sources.items()},
             "validated_path": str(validated_path), "report_path": str(report_path)}
+
+
+def daily_weather(hourly, lookback_days):
+    """One row per day: rain, snow, coldest hour, and snow over the previous `lookback_days` days."""
+    daily = hourly.assign(date=hourly["time"].str[:10]).groupby("date").agg(
+        precipitation=("precipitation", "sum"), snowfall=("snowfall", "sum"), temp_min=("temperature_2m", "min"))
+    daily["snow_prev"] = daily["snowfall"].shift(1).rolling(lookback_days, min_periods=1).sum().fillna(0)
+    return daily
 
 
 def _load_ref(ingest_results, name):

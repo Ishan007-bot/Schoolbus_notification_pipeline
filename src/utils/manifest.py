@@ -25,7 +25,8 @@ def new_manifest(run_id, month, force):
         "status": "running",          # -> success | degraded | failed
         "halted_stage": None,
         "error": None,
-        "notes": [],
+        "notes": [],                  # degraded-run reasons
+        "scope_notes": [],            # how to read the month (e.g. summer service)
         "code_version": code_version(),
         "config_sha256": hashlib.sha256(Path(CONFIG_PATH).read_bytes()).hexdigest()[:16],
         "sources": {},

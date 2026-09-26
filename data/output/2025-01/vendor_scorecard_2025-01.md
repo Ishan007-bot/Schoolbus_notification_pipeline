@@ -11,7 +11,7 @@
 | **M2** Median logging lag | 6.0 min |
 | **M3** Student-minutes delayed (lower bound) | 406,170 |
 | **M4** Incidents per 100 contracted routes | 99.8 |
-| **M5** Data-trust score | 99.9% |
+| **M5** Data-trust score | 100.0% |
 
 M3 note: lower bound; range 299,371-512,970; 38.9% of late incidents are in the open-ended top bucket (61-90 Min).
 
@@ -41,8 +41,8 @@ A vendor with at least 30 incidents is listed if any trigger fires: **M1** notif
 | PIONEER TRANSPORTATION CORP | PW | 461 | 0.9% | 2.0 | 29,348 | 92.4 | 0.2 | 99.8% | **YES** | M1 |
 | EMPIRE CHARTER SERVICE INC | EQ | 372 | 1.1% | 2.5 | 25,110 | 483.1 | 3.9 | 100.0% | **YES** | M1 |
 | PHILLIP BUS CORP (B2192) | FP | 39 | 2.6% | 2.0 | 2,608 | 118.2 | 18.2 | 100.0% | **YES** | M4 |
-| L & M BUS CORP (A) | LU | 194 | 55.1% | 18.0 | 10,986 | 130.2 | 13.4 | 99.5% | **YES** | M4 |
-| PRIDE TRANSPORTATION (SCH AGE) | PC | 3355 | 97.2% | 19.0 | 96,586 | 624.8 | 29.2 | 99.9% | **YES** | M4 |
+| L & M BUS CORP (A) | LU | 194 | 55.1% | 18.0 | 10,986 | 130.2 | 13.4 | 100.0% | **YES** | M4 |
+| PRIDE TRANSPORTATION (SCH AGE) | PC | 3355 | 97.2% | 19.0 | 96,586 | 624.8 | 29.2 | 100.0% | **YES** | M4 |
 | HOYT TRANSPORTATION CORP. | AP | 464 | 97.6% | 2.0 | 18,659 | 112.3 | 5.8 | 100.0% | **YES** | M4 |
 | ALLIED TRANSIT CORP. | IE | 458 | 1.5% | 4.0 | 45,256 | 288.1 | 3.8 | 100.0% | no | – |
 | MAR-CAN TRANSPORT CO. INC (B2192) | MW | 46 | 2.2% | 2.0 | 5,320 | 23.7 | 1.0 | 100.0% | no | – |
@@ -51,8 +51,8 @@ A vendor with at least 30 incidents is listed if any trigger fires: **M1** notif
 | LORINDA ENTERPRISES, LTD. | LR | 233 | 18.4% | 1.0 | 371 | 78.5 | 3.0 | 100.0% | no | – |
 | LOGAN BUS COMPANY INC. | LG | 173 | 22.5% | 1.0 | 0 | 46.1 | 3.2 | 100.0% | no | – |
 | LITTLE RICHIE BUS SERVICE | LB | 284 | 25.4% | 1.0 | 190 | 60.4 | 4.3 | 100.0% | no | – |
-| BORO TRANSIT, INC. | BO | 350 | 42.6% | 4.0 | 3,406 | 43.6 | 1.5 | 99.4% | no | – |
-| SNT BUS INC | NW | 180 | 43.9% | 3.0 | 4,543 | 22.8 | 1.5 | 99.4% | no | – |
+| BORO TRANSIT, INC. | BO | 350 | 42.6% | 4.0 | 3,406 | 43.6 | 1.5 | 100.0% | no | – |
+| SNT BUS INC | NW | 180 | 43.9% | 3.0 | 4,543 | 22.8 | 1.5 | 100.0% | no | – |
 | CONSOLIDATED BUS TRANSIT, INC. | CS | 87 | 67.8% | 5.0 | 532 | 55.8 | 0.6 | 100.0% | no | – |
 | G.V.C. LTD. (B2192) | GC | 173 | 86.1% | 2.0 | 19,665 | 190.1 | 0.0 | 100.0% | no | – |
 | DON THOMAS BUSES, INC. (B2321) | GT | 184 | 91.3% | 5.0 | 10,336 | 195.7 | 2.1 | 99.5% | no | – |

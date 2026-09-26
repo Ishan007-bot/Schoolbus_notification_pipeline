@@ -1,12 +1,14 @@
 """S4 - Open-Meteo historical weather for one NYC point (JSON API).
 
-Completeness: one row per hour of the month (±1 for daylight-saving changeover),
-and no missing precipitation values. The archive lags a few days behind today, so
+The pull starts `snow_lookback_days` before the month so rule V12 can see snow that fell
+just before the 1st. Completeness: one row per hour of that window (±1 for daylight-saving
+changeover), and no missing precipitation values. The archive lags a few days behind today, so
 a very recent month can legitimately fail this check - weather is supplementary,
 so failure means a degraded run, not a halt.
 """
 import json
 import logging
+from datetime import timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -22,17 +24,20 @@ log = logging.getLogger("ingest.weather")
 
 
 def ingest_weather(month, cfg, raw_root, run_id, force=False, get=http.get):
+    lookback = cfg["validation"]["snow_lookback_days"]
     if not force:
         previous = latest_success(raw_root, SOURCE, month)
-        if previous:
+        # a pull made with a different look-back window doesn't cover what the rules now need
+        if previous and previous[1].get("lookback_days", 0) == lookback:
             run_dir, meta = previous
             log.info("reusing pull from run %s", run_dir.name)
             return SourceResult(SOURCE, "reused", meta["rows"], str(run_dir), meta["checks"], f"reused run {run_dir.name}")
 
     w = cfg["sources"]["weather"]
     start, end = month_bounds(month)
+    first_day = start - timedelta(days=lookback)
     params = {"latitude": w["latitude"], "longitude": w["longitude"], "timezone": w["timezone"],
-              "start_date": str(start), "end_date": str(end), "hourly": ",".join(w["hourly"])}
+              "start_date": str(first_day), "end_date": str(end), "hourly": ",".join(w["hourly"])}
     try:
         data = get(w["api_url"], params, http_cfg=cfg["http"]).json()
     except HTTPFailure as e:
@@ -42,7 +47,7 @@ def ingest_weather(month, cfg, raw_root, run_id, force=False, get=http.get):
     run_dir = new_run_dir(raw_root, SOURCE, month, run_id)
     (run_dir / "weather.json").write_text(json.dumps(data), encoding="utf-8")
 
-    checks = completeness_checks(data, expected_hours=24 * end.day)
+    checks = completeness_checks(data, expected_hours=24 * ((end - first_day).days + 1))
     failures = failed_checks(checks)
     hours = len(data.get("hourly", {}).get("time", []))
     if failures:
@@ -50,7 +55,8 @@ def ingest_weather(month, cfg, raw_root, run_id, force=False, get=http.get):
         log.warning("weather incomplete (%s)", message)
         return SourceResult(SOURCE, "failed", hours, str(run_dir), checks, message)
 
-    mark_success(run_dir, {"source": SOURCE, "month": month, "run_id": run_id, "rows": hours, "checks": checks})
+    mark_success(run_dir, {"source": SOURCE, "month": month, "run_id": run_id, "rows": hours,
+                           "lookback_days": lookback, "checks": checks})
     log.info("weather: %d hourly rows", hours)
     return SourceResult(SOURCE, "ok", hours, str(run_dir), checks)
 

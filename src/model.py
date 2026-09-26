@@ -127,10 +127,13 @@ def load_weather_hours(con, result, month):
     con.register("weather_hourly", hourly)
     con.execute("DELETE FROM dim_hour WHERE hour >= ? AND hour < ?", [start, end + timedelta(days=1)])
     # GROUP BY: the repeated local hour when clocks go back in November
+    # the pull includes look-back days from the previous month; dim_hour only takes this month's hours
     con.execute("""
         INSERT INTO dim_hour
         SELECT CAST(time AS TIMESTAMP) AS hour, sum(precipitation), sum(snowfall), avg(temperature_2m)
-        FROM weather_hourly GROUP BY 1""")
+        FROM weather_hourly
+        WHERE CAST(time AS TIMESTAMP) >= ? AND CAST(time AS TIMESTAMP) < ?
+        GROUP BY 1""", [start, end + timedelta(days=1)])
     con.unregister("weather_hourly")
 
 

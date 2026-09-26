@@ -44,11 +44,23 @@ def month_range(first, last):
     return months
 
 
-def school_year_for_month(month):
-    """NYC school years run September to August.
+# OPT's school year runs July to June (like NYC's fiscal year): summer incidents in July and
+# August are labelled with the UPCOMING school year. Found in the data - July 2025 incidents are
+# all "2025-2026", July 2024 all "2024-2025" - after first assuming September (rule V04 caught it).
+SCHOOL_YEAR_START_MONTH = 7
 
-    '2025-09' -> '2025-2026', '2026-03' -> '2025-2026'.
-    """
+
+# In July and August OPT runs summer service with different operators: the Routes table describes
+# school-year contracts (same routes are reported by other companies in summer, never in October).
+SUMMER_MONTHS = (7, 8)
+
+
+def is_summer(month):
+    return parse_month(month)[1] in SUMMER_MONTHS
+
+
+def school_year_for_month(month):
+    """'2025-07' -> '2025-2026', '2026-06' -> '2025-2026'."""
     year, mon = parse_month(month)
-    start = year if mon >= 9 else year - 1
+    start = year if mon >= SCHOOL_YEAR_START_MONTH else year - 1
     return f"{start}-{start + 1}"

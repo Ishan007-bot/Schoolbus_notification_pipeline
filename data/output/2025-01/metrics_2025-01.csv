@@ -19,6 +19,6 @@ M4,share of incidents by reason category,external,0.7384,6549,8869,
 M4,share of incidents by reason category,route_design,0.015,133,8869,
 M4,share of incidents by reason category,unknown,0.2071,1837,8869,
 M4,share of incidents by reason category,vendor_controllable,0.0395,350,8869,
-M5,data-trust score,all,0.9991,8861,8869,"valid and none of V03,V06,V07,V09,V10,V12"
+M5,data-trust score,all,0.9998,8867,8869,"valid and none of V03,V06,V07,V09,V10,V12"
 AUDIT,vendors ranked,all,28.0,,,>= 30 incidents in the period
 AUDIT,vendors on audit list,all,11.0,,,

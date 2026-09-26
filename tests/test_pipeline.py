@@ -174,3 +174,33 @@ def test_manifest_paths_are_relative_to_project(tmp_path, cfg, internet):
     assert str(tmp_path) not in text and str(tmp_path).replace("\\", "/") not in text
     saved = json.loads(text)
     assert saved["validation"]["validated_path"] == "data/processed/incidents/2025-10/incidents_validated.parquet"
+
+
+def test_cross_month_summary_lists_halted_months_and_repeat_audits(tmp_path, cfg, internet):
+    from src.summary import build_summary
+    cfg["metrics"]["min_incidents_per_vendor"] = 1
+    for m in ["2025-10", "2025-11", "2025-12"]:                          # December halts (no incidents)
+        run(tmp_path, cfg, month=m, run_id="backfill")
+    paths = build_summary(["2025-10", "2025-11", "2025-12"], tmp_path / "data" / "output", min_months_ranked=1)
+
+    trend = pd.read_csv(paths["trend_csv"])
+    assert trend["month"].tolist() == ["2025-10", "2025-11", "2025-12"]
+    assert trend["status"].tolist() == ["success", "success", "no outputs (halted)"]
+    assert trend["incidents"].tolist()[:2] == [5, 4]
+
+    repeat = pd.read_csv(paths["repeat_csv"])
+    assert repeat.loc[repeat["vendor_key"] == "AA", "months_ranked"].item() == 2
+
+    md = open(paths["md"], encoding="utf-8").read()
+    assert "2 of 3 months produced outputs" in md and "2025-12" in md
+
+
+def test_summer_month_has_scope_note_and_no_m4(tmp_path, cfg, internet):
+    internet.incidents["2025-07"] = month_rows("2025-07")
+    m = run(tmp_path, cfg, month="2025-07")
+    assert m["status"] == "success" and m["scope_notes"] and not m["notes"]
+    sc = pd.read_csv(tmp_path / "data" / "output" / "2025-07" / "vendor_scorecard_2025-07.csv")
+    assert sc["m4_incidents_per_100_routes"].isna().all()
+    assert (sc["vendor_key"] == "AA").any()                               # still attributed, by name
+    md = (tmp_path / "data" / "output" / "2025-07" / "vendor_scorecard_2025-07.md").read_text(encoding="utf-8")
+    assert "summer service" in md

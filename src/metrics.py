@@ -12,7 +12,7 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
-from src.config import school_year_for_month
+from src.config import is_summer, school_year_for_month
 from src.utils.files import atomic_write
 
 log = logging.getLogger("metrics")
@@ -79,10 +79,11 @@ def build_period_tables(con, month, mcfg):
             FROM fact_incident f LEFT JOIN dim_reason r USING (reason)
             WHERE f.period = ?
         )""", [mcfg["logged_within_minutes"], month])
+    # Summer: route contracts describe the school year, so there is no fair route denominator -> M4 is n/a.
     con.execute("""
         CREATE OR REPLACE TEMP TABLE period_routes AS
-        SELECT vendor_code, count(*) AS contracted_routes FROM dim_route WHERE school_year = ? GROUP BY 1""",
-                [school_year_for_month(month)])
+        SELECT vendor_code, count(*) AS contracted_routes FROM dim_route
+        WHERE school_year = ? AND NOT ? GROUP BY 1""", [school_year_for_month(month), is_summer(month)])
 
 
 def apply_audit_rule(scorecard, mcfg):

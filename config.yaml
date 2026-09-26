@@ -28,7 +28,11 @@ validation:
   max_logging_lag_hours: 24          # V03 warning
   delay_minutes_range: [1, 180]      # V07 warning
   students_on_bus_range: [0, 72]     # V10 warning
-  dry_day_precip_mm: 1.0             # V12: "weather" reason on a day with less rain than this and no snow
+  # V12: a "Weather Conditions" reason is supported by rain that day, snow that day or in the previous
+  # snow_lookback_days (snow and ice stay on the roads), or freezing temperatures.
+  dry_day_precip_mm: 1.0
+  snow_lookback_days: 3
+  freezing_temp_c: 0.0
   reference_rowcount_tolerance_pct: 20
 
 metrics:

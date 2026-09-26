@@ -1,0 +1,16 @@
+rule_id,level,description,status,rows_flagged,pct_flagged
+V01,critical,busbreakdown_id is unique (later duplicates flagged),ok,0,0.0
+V02,critical,incident logged at or after it occurred (created_on >= occurred_on),ok,0,0.0
+V03,warning,logged within max_logging_lag_hours of occurring,ok,0,0.0
+V04,critical,school_year matches the occurred_on date,ok,0,0.0
+V05,critical,occurred_on inside the requested month and not in the future,ok,0,0.0
+V06,warning,Running Late incident has a readable delay,ok,0,0.0
+V07,warning,parsed delay within delay_minutes_range,ok,0,0.0
+V08,warning,vendor attributable from Routes contract data (else name fallback),flagged,680,6.71
+V09,warning,reported company matches the contracted vendor for the route,ok,0,0.0
+V10,warning,students on bus is a number within students_on_bus_range,flagged,3,0.03
+V11,warning,notification flags are Yes/No,ok,0,0.0
+V12,warning,"'Weather Conditions' reason supported by rain, recent snow or freezing temperatures",ok,0,0.0
+V13,warning,every schools_serviced code exists in Transportation Sites,flagged,19,0.19
+TOTAL,,rows validated,,10135,100.0
+INVALID,critical,rows failing at least one critical rule,,0,0.0

@@ -16,7 +16,7 @@ FLAG_COLUMNS = {
 }
 
 
-def prepare_incidents(raw, routes, school_year):
+def prepare_incidents(raw, routes, school_year, use_route_contracts=True):
     df = raw.copy()
     for col in ("occurred_on", "created_on", "informed_on", "last_updated_on"):
         df[col] = pd.to_datetime(df[col], errors="coerce")
@@ -27,16 +27,19 @@ def prepare_incidents(raw, routes, school_year):
         df[target] = df[source].map(YES_NO).astype("boolean")
 
     df = df.join(parse_delay_column(df["how_long_delayed"]))
-    return df.join(attribute_vendor(df, routes, school_year))
+    return df.join(attribute_vendor(df, routes, school_year, use_route_contracts))
 
 
-def attribute_vendor(df, routes, school_year):
+def attribute_vendor(df, routes, school_year, use_route_contracts=True):
     """Who is responsible for each incident, and how we know.
 
     vendor_source:
       routes         route_number found in OPT's contract data for this school year (authoritative)
       name_match     route not found, but the reported company name exactly matches a contracted vendor
       reported_name  neither - fall back to the name the vendor typed (e.g. Pre-K routes, absent from Routes)
+
+    use_route_contracts=False (summer months): route contracts describe the school year, not summer
+    service, so only the name steps are used.
     """
     reported = df["bus_company_name"].str.strip()
     empty = pd.Series(pd.NA, index=df.index, dtype="string")
@@ -47,8 +50,9 @@ def attribute_vendor(df, routes, school_year):
         if len(year):
             by_route = year.drop_duplicates("Route_Number").set_index("Route_Number")
             by_name = year.drop_duplicates("Vendor_Name").set_index("Vendor_Name")["Vendor_Code"]
-            route_code = df["route_number"].map(by_route["Vendor_Code"]).astype("string")
-            route_name = df["route_number"].map(by_route["Vendor_Name"]).astype("string")
+            if use_route_contracts:
+                route_code = df["route_number"].map(by_route["Vendor_Code"]).astype("string")
+                route_name = df["route_number"].map(by_route["Vendor_Name"]).astype("string")
             name_code = reported.map(by_name).astype("string")
 
     use_route = route_code.notna()

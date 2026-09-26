@@ -1,0 +1,244 @@
+{
+  "run_id": "20260926T203312Z",
+  "period": "2026-04",
+  "school_year": "2025-2026",
+  "force": false,
+  "started_at": "2026-09-26T20:35:09+00:00",
+  "finished_at": "2026-09-26T20:35:13+00:00",
+  "status": "success",
+  "halted_stage": null,
+  "error": null,
+  "notes": [],
+  "scope_notes": [],
+  "code_version": {
+    "commit": "147a95e",
+    "dirty": true
+  },
+  "config_sha256": "0c5b9eb80e54df10",
+  "sources": {
+    "incidents": {
+      "source": "incidents",
+      "status": "reused",
+      "rows": 6775,
+      "raw_dir": "data/raw/incidents/2026-04/20260926T201713Z",
+      "checks": {
+        "row_count_matches": {
+          "passed": true,
+          "detail": "received 6775, expected 6775"
+        },
+        "no_duplicate_ids": {
+          "passed": true,
+          "detail": "0 duplicate ids"
+        },
+        "all_inside_month": {
+          "passed": true,
+          "detail": "0 rows outside 2026-04-01..2026-04-30"
+        },
+        "not_empty": {
+          "passed": true,
+          "detail": "6775 rows"
+        }
+      },
+      "message": "reused run 20260926T201713Z"
+    },
+    "routes": {
+      "source": "routes",
+      "status": "reused",
+      "rows": 10429,
+      "raw_dir": "data/raw/routes/2025-2026/20260926T193344Z",
+      "checks": {
+        "not_empty": {
+          "passed": true,
+          "detail": "13,066,973 bytes, 74,147 rows"
+        },
+        "expected_columns": {
+          "passed": true,
+          "detail": "all present"
+        },
+        "has_school_year": {
+          "passed": true,
+          "detail": "10429 rows for 2025-2026"
+        }
+      },
+      "message": "reused run 20260926T193344Z"
+    },
+    "sites": {
+      "source": "sites",
+      "status": "reused",
+      "rows": 6499,
+      "raw_dir": "data/raw/sites/2025-2026/20260926T193344Z",
+      "checks": {
+        "not_empty": {
+          "passed": true,
+          "detail": "5,041,006 bytes, 35,783 rows"
+        },
+        "expected_columns": {
+          "passed": true,
+          "detail": "all present"
+        },
+        "has_school_year": {
+          "passed": true,
+          "detail": "6499 rows for 2025-2026"
+        }
+      },
+      "message": "reused run 20260926T193344Z"
+    },
+    "weather": {
+      "source": "weather",
+      "status": "ok",
+      "rows": 792,
+      "raw_dir": "data/raw/weather/2026-04/20260926T203312Z",
+      "checks": {
+        "hour_count": {
+          "passed": true,
+          "detail": "792 hours, expected 792"
+        },
+        "precipitation_complete": {
+          "passed": true,
+          "detail": "0 missing values"
+        }
+      },
+      "message": ""
+    }
+  },
+  "validation": {
+    "rows": 6775,
+    "valid": 6775,
+    "critical_pct": 0.0,
+    "rules": {
+      "V01": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V02": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V03": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V04": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V05": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V06": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V07": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V08": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 641
+      },
+      "V09": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V10": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 1
+      },
+      "V11": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V12": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V13": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 36
+      }
+    },
+    "vendor_attribution": {
+      "routes": 6134,
+      "reported_name": 489,
+      "name_match": 152
+    },
+    "validated_path": "data/processed/incidents/2026-04/incidents_validated.parquet",
+    "report_path": "data/output/2026-04/quality_report_2026-04.csv"
+  },
+  "model": {
+    "period_rows": 6775,
+    "duplicates_skipped": 0,
+    "table_counts": {
+      "fact_incident": 147548,
+      "bridge_incident_site": 381137,
+      "dim_vendor": 60,
+      "dim_route": 20707,
+      "dim_site": 12892,
+      "dim_hour": 14568,
+      "dim_reason": 10
+    },
+    "unmapped_reasons": [],
+    "checks": {
+      "fact_matches_validated": {
+        "passed": true,
+        "detail": "6775 loaded, 6775 expected"
+      },
+      "fact_not_empty": {
+        "passed": true,
+        "detail": "6775 rows"
+      },
+      "vendor_keys_resolve": {
+        "passed": true,
+        "detail": "0 unresolved"
+      },
+      "bridge_has_no_orphans": {
+        "passed": true,
+        "detail": "0 orphans"
+      },
+      "contract_routes_resolve": {
+        "passed": true,
+        "detail": "0 unresolved"
+      }
+    }
+  },
+  "metrics": {
+    "paths": {
+      "metrics": "data/output/2026-04/metrics_2026-04.csv",
+      "scorecard_csv": "data/output/2026-04/vendor_scorecard_2026-04.csv",
+      "scorecard_md": "data/output/2026-04/vendor_scorecard_2026-04.md"
+    },
+    "audit_list": [
+      "CAREFUL BUS [CL]",
+      "PHILLIP BUS CORP (B2192) [FP]",
+      "DON THOMAS BUSES, INC. (B2321) [GT]",
+      "LITTLE RICHIE BUS SERVICE [LB]",
+      "LOGAN BUS COMPANY INC. [LG]",
+      "LEESEL TRANSPORTATION CORP (B2192) [LK]",
+      "L & M BUS CORP (A) [LU]",
+      "PRIDE TRANSPORTATION (SCH AGE) [PC]",
+      "PIONEER TRANSPORTATION CORP [PT]",
+      "PIONEER TRANSPORTATION CORP [PW]",
+      "QUALITY TRANSPORTATION CORP. [QL]"
+    ],
+    "vendors_ranked": 28,
+    "headline": {
+      "m1": 0.5433,
+      "m5": 0.9999
+    }
+  }
+}

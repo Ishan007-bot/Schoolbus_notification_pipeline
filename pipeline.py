@@ -14,11 +14,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from src.config import REPO_ROOT, load_config, month_range, parse_month
+from src.config import REPO_ROOT, is_summer, load_config, month_range, parse_month
 from src.ingest.common import IngestError
 from src.ingest.stage import run_ingest
 from src.metrics import run_metrics
 from src.model import ModelError, run_model
+from src.summary import build_summary
 from src.utils.http import HTTPFailure
 from src.utils.logging_setup import setup_logging
 from src.utils.manifest import new_manifest, write_manifest
@@ -27,12 +28,16 @@ from src.validate.stage import ValidationHalt, run_validate
 log = logging.getLogger("pipeline")
 
 EXPECTED_FAILURES = (IngestError, HTTPFailure, ValidationHalt, ModelError)
+SUMMER_NOTE = ("summer service: vendors attributed by reported company name (school-year route contracts "
+               "don't describe summer operators); M4 not computed")
 
 
 def run_month(month, config, run_id, force=False, root=REPO_ROOT, now=None):
     """All stages for one month. Never raises: failures are recorded in the returned manifest."""
     paths = {name: Path(root) / p for name, p in config["paths"].items()}
     manifest = new_manifest(run_id, month, force)
+    # scope notes explain how to read the month; unlike degraded notes they don't change the status
+    manifest["scope_notes"] = [SUMMER_NOTE] if is_summer(month) else []
     stage = "ingest"
     log.info("===== %s (school year %s) =====", month, manifest["school_year"])
     try:
@@ -50,7 +55,8 @@ def run_month(month, config, run_id, force=False, root=REPO_ROOT, now=None):
         manifest["model"] = modelled
 
         stage = "metrics"
-        manifest["metrics"] = run_metrics(month, paths["warehouse"], config, paths["output"], status, notes)
+        manifest["metrics"] = run_metrics(month, paths["warehouse"], config, paths["output"], status,
+                                          notes + manifest["scope_notes"])
         manifest["status"] = status
     except EXPECTED_FAILURES as e:
         manifest.update(status="failed", halted_stage=stage, error=str(e))
@@ -94,6 +100,7 @@ def main(argv=None):
                      m["validation"].get("rows", "-"),
                      f"{m['metrics']['headline']['m1']:.1%}" if ok else "-",
                      len(m["metrics"]["audit_list"]) if ok else "-")
+        build_summary(months, REPO_ROOT / config["paths"]["output"])
     failed = [m["period"] for m in manifests if m["status"] == "failed"]
     log.info("done: %d month(s), %d failed%s | log: %s", len(manifests), len(failed),
              f" ({', '.join(failed)})" if failed else "", log_path)

@@ -12,6 +12,8 @@ from typing import Callable
 
 import pandas as pd
 
+from src.config import SCHOOL_YEAR_START_MONTH
+
 WEATHER_REASON = "Weather Conditions"
 
 
@@ -37,7 +39,7 @@ def v03(df, ctx):
 
 def v04(df, ctx):
     occurred = df["occurred_on"]
-    start = occurred.dt.year.where(occurred.dt.month >= 9, occurred.dt.year - 1).astype("Int64")
+    start = occurred.dt.year.where(occurred.dt.month >= SCHOOL_YEAR_START_MONTH, occurred.dt.year - 1).astype("Int64")
     expected = start.astype("string") + "-" + (start + 1).astype("string")
     return occurred.notna() & (df["school_year"] != expected)
 
@@ -88,11 +90,14 @@ def v12(df, ctx):
     daily = ctx["weather_daily"]
     if daily is None:
         return None
-    day = df["occurred_on"].dt.strftime("%Y-%m-%d")
-    precip = day.map(daily["precipitation"])
-    snow = day.map(daily["snowfall"])
-    dry = (precip < ctx["validation"]["dry_day_precip_mm"]) & (snow == 0)
-    return (df["reason"] == WEATHER_REASON) & dry
+    v = ctx["validation"]
+    w = daily.reindex(df["occurred_on"].dt.strftime("%Y-%m-%d").values)
+    # comparisons with a missing value are False in pandas, so "no weather row" must be handled
+    # explicitly: no data for that day means no evidence against the vendor
+    supported = (w["precipitation"].isna() | (w["precipitation"] >= v["dry_day_precip_mm"]) |
+                 (w["snowfall"] > 0) | (w["snow_prev"] > 0) | (w["temp_min"] <= v["freezing_temp_c"]))
+    supported = pd.Series(supported.values, index=df.index)
+    return (df["reason"] == WEATHER_REASON) & ~supported
 
 
 def v13(df, ctx):
@@ -116,7 +121,7 @@ RULES = [
     Rule("V09", "warning", "reported company matches the contracted vendor for the route", v09),
     Rule("V10", "warning", "students on bus is a number within students_on_bus_range", v10),
     Rule("V11", "warning", "notification flags are Yes/No", v11),
-    Rule("V12", "warning", "'Weather Conditions' reason on a day with measurable rain or snow", v12),
+    Rule("V12", "warning", "'Weather Conditions' reason supported by rain, recent snow or freezing temperatures", v12),
     Rule("V13", "warning", "every schools_serviced code exists in Transportation Sites", v13),
 ]
 

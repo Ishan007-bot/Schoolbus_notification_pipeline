@@ -10,7 +10,7 @@ V08,warning,vendor attributable from Routes contract data (else name fallback),f
 V09,warning,reported company matches the contracted vendor for the route,flagged,1,0.01
 V10,warning,students on bus is a number within students_on_bus_range,flagged,1,0.01
 V11,warning,notification flags are Yes/No,ok,0,0.0
-V12,warning,'Weather Conditions' reason on a day with measurable rain or snow,flagged,6,0.07
+V12,warning,"'Weather Conditions' reason supported by rain, recent snow or freezing temperatures",ok,0,0.0
 V13,warning,every schools_serviced code exists in Transportation Sites,flagged,22,0.25
 TOTAL,,rows validated,,8869,100.0
 INVALID,critical,rows failing at least one critical rule,,0,0.0

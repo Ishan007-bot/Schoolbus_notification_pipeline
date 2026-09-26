@@ -5,14 +5,17 @@ import pytest
 from src.config import load_config, month_bounds, month_range, school_year_for_month
 
 
-def test_school_year_autumn_starts_new_year():
+def test_school_year_starts_in_july():
+    # summer incidents belong to the UPCOMING school year (observed in OPT's data)
+    assert school_year_for_month("2025-07") == "2025-2026"
+    assert school_year_for_month("2025-08") == "2025-2026"
     assert school_year_for_month("2025-09") == "2025-2026"
     assert school_year_for_month("2025-12") == "2025-2026"
 
 
 def test_school_year_spring_belongs_to_previous_start():
     assert school_year_for_month("2026-01") == "2025-2026"
-    assert school_year_for_month("2026-08") == "2025-2026"
+    assert school_year_for_month("2026-06") == "2025-2026"
 
 
 def test_month_bounds_handles_month_lengths():

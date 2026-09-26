@@ -1,0 +1,25 @@
+metric_id,metric,segment,value,numerator,denominator,note
+CTX,incidents,all,10767.0,,,
+CTX,valid incidents,all,10766.0,10766,10767,rows passing all critical rules
+CTX,attributed to vendor via contract routes,all,0.9198,9904,10767,the rest use the reported company name (mostly Pre-K)
+M1,parent notification rate,all,0.4186,4507,10766,vendor-claimed Yes/No flag; no timestamp exists for when parents were told
+M1,parent notification rate,General Ed AM Run,0.1056,136,1288,
+M1,parent notification rate,General Ed Field Trip,0.1111,3,27,
+M1,parent notification rate,General Ed PM Run,0.0584,15,257,
+M1,parent notification rate,Pre-K/EI,0.947,804,849,
+M1,parent notification rate,Special Ed AM Run,0.4656,3265,7012,
+M1,parent notification rate,Special Ed Field Trip,0.3889,7,18,
+M1,parent notification rate,Special Ed PM Run,0.2108,277,1314,
+M1,parent notification rate,,0.0,0,1,
+M2,median logging lag (minutes),all,4.0,,,created_on minus occurred_on
+M2,logged within 15 minutes,all,0.7589,8170,10766,
+M3,student-minutes delayed,all,654578.5,,,"lower bound; range 497,477-811,680; 19.9% of late incidents are in the open-ended top bucket (61-90 Min)"
+M3,late incidents in top delay bucket,all,0.1987,2036,10246,real delay may exceed 90 minutes
+M4,incidents per 100 contracted routes,contract vendors,97.936,9917,10126,
+M4,share of incidents by reason category,external,0.6873,7400,10766,
+M4,share of incidents by reason category,route_design,0.1145,1233,10766,
+M4,share of incidents by reason category,unknown,0.1561,1681,10766,
+M4,share of incidents by reason category,vendor_controllable,0.042,452,10766,
+M5,data-trust score,all,0.999,10756,10767,"valid and none of V03,V06,V07,V09,V10,V12"
+AUDIT,vendors ranked,all,30.0,,,>= 30 incidents in the period
+AUDIT,vendors on audit list,all,12.0,,,

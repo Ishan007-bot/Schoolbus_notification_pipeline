@@ -1,0 +1,236 @@
+{
+  "run_id": "20260926T203312Z",
+  "period": "2025-08",
+  "school_year": "2025-2026",
+  "force": false,
+  "started_at": "2026-09-26T20:34:17+00:00",
+  "finished_at": "2026-09-26T20:34:22+00:00",
+  "status": "success",
+  "halted_stage": null,
+  "error": null,
+  "notes": [],
+  "scope_notes": [
+    "summer service: vendors attributed by reported company name (school-year route contracts don't describe summer operators); M4 not computed"
+  ],
+  "code_version": {
+    "commit": "147a95e",
+    "dirty": true
+  },
+  "config_sha256": "0c5b9eb80e54df10",
+  "sources": {
+    "incidents": {
+      "source": "incidents",
+      "status": "reused",
+      "rows": 1032,
+      "raw_dir": "data/raw/incidents/2025-08/20260926T201713Z",
+      "checks": {
+        "row_count_matches": {
+          "passed": true,
+          "detail": "received 1032, expected 1032"
+        },
+        "no_duplicate_ids": {
+          "passed": true,
+          "detail": "0 duplicate ids"
+        },
+        "all_inside_month": {
+          "passed": true,
+          "detail": "0 rows outside 2025-08-01..2025-08-31"
+        },
+        "not_empty": {
+          "passed": true,
+          "detail": "1032 rows"
+        }
+      },
+      "message": "reused run 20260926T201713Z"
+    },
+    "routes": {
+      "source": "routes",
+      "status": "reused",
+      "rows": 10429,
+      "raw_dir": "data/raw/routes/2025-2026/20260926T193344Z",
+      "checks": {
+        "not_empty": {
+          "passed": true,
+          "detail": "13,066,973 bytes, 74,147 rows"
+        },
+        "expected_columns": {
+          "passed": true,
+          "detail": "all present"
+        },
+        "has_school_year": {
+          "passed": true,
+          "detail": "10429 rows for 2025-2026"
+        }
+      },
+      "message": "reused run 20260926T193344Z"
+    },
+    "sites": {
+      "source": "sites",
+      "status": "reused",
+      "rows": 6499,
+      "raw_dir": "data/raw/sites/2025-2026/20260926T193344Z",
+      "checks": {
+        "not_empty": {
+          "passed": true,
+          "detail": "5,041,006 bytes, 35,783 rows"
+        },
+        "expected_columns": {
+          "passed": true,
+          "detail": "all present"
+        },
+        "has_school_year": {
+          "passed": true,
+          "detail": "6499 rows for 2025-2026"
+        }
+      },
+      "message": "reused run 20260926T193344Z"
+    },
+    "weather": {
+      "source": "weather",
+      "status": "ok",
+      "rows": 816,
+      "raw_dir": "data/raw/weather/2025-08/20260926T203312Z",
+      "checks": {
+        "hour_count": {
+          "passed": true,
+          "detail": "816 hours, expected 816"
+        },
+        "precipitation_complete": {
+          "passed": true,
+          "detail": "0 missing values"
+        }
+      },
+      "message": ""
+    }
+  },
+  "validation": {
+    "rows": 1032,
+    "valid": 1032,
+    "critical_pct": 0.0,
+    "rules": {
+      "V01": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V02": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V03": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V04": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V05": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V06": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V07": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V08": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 1032
+      },
+      "V09": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V10": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 1
+      },
+      "V11": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V12": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V13": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 17
+      }
+    },
+    "vendor_attribution": {
+      "name_match": 746,
+      "reported_name": 286
+    },
+    "validated_path": "data/processed/incidents/2025-08/incidents_validated.parquet",
+    "report_path": "data/output/2025-08/quality_report_2025-08.csv"
+  },
+  "model": {
+    "period_rows": 1032,
+    "duplicates_skipped": 0,
+    "table_counts": {
+      "fact_incident": 76560,
+      "bridge_incident_site": 197569,
+      "dim_vendor": 57,
+      "dim_route": 20707,
+      "dim_site": 12892,
+      "dim_hour": 8760,
+      "dim_reason": 10
+    },
+    "unmapped_reasons": [],
+    "checks": {
+      "fact_matches_validated": {
+        "passed": true,
+        "detail": "1032 loaded, 1032 expected"
+      },
+      "fact_not_empty": {
+        "passed": true,
+        "detail": "1032 rows"
+      },
+      "vendor_keys_resolve": {
+        "passed": true,
+        "detail": "0 unresolved"
+      },
+      "bridge_has_no_orphans": {
+        "passed": true,
+        "detail": "0 orphans"
+      },
+      "contract_routes_resolve": {
+        "passed": true,
+        "detail": "0 unresolved"
+      }
+    }
+  },
+  "metrics": {
+    "paths": {
+      "metrics": "data/output/2025-08/metrics_2025-08.csv",
+      "scorecard_csv": "data/output/2025-08/vendor_scorecard_2025-08.csv",
+      "scorecard_md": "data/output/2025-08/vendor_scorecard_2025-08.md"
+    },
+    "audit_list": [
+      "BORO TRANSIT, INC. [BO]",
+      "CONSOLIDATED BUS TRANSIT, INC. [CS]"
+    ],
+    "vendors_ranked": 8,
+    "headline": {
+      "m1": 0.7161,
+      "m5": 0.999
+    }
+  }
+}

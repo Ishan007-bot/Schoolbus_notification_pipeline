@@ -18,8 +18,12 @@ ROUTES = pd.DataFrame({
     "Vendor_Name": ["ALPHA BUS", "BETA BUS", "BETA BUS"],
 })
 SITE_CODES = {"01001", "02002"}
-DAILY_WEATHER = pd.DataFrame({"precipitation": [12.0, 0.0], "snowfall": [0.0, 0.0]},
-                             index=["2025-10-08", "2025-10-14"])
+DAILY_WEATHER = pd.DataFrame({
+    "precipitation": [12.0, 0.0, 0.0, 0.0],
+    "snowfall":      [0.0, 0.0, 0.0, 0.0],
+    "snow_prev":     [0.0, 0.0, 20.0, 0.0],      # 10-20: 20 cm of snow in the previous days
+    "temp_min":      [10.0, 10.0, 5.0, -8.0],    # 10-24: deep freeze
+}, index=["2025-10-08", "2025-10-14", "2025-10-20", "2025-10-24"])
 
 
 def incident(i, **overrides):
@@ -41,7 +45,7 @@ def ctx(weather=DAILY_WEATHER, site_codes=SITE_CODES):
     return {
         "start": date(2025, 10, 1), "end": date(2025, 10, 31), "now": datetime(2026, 9, 27),
         "validation": {"max_logging_lag_hours": 24, "delay_minutes_range": [1, 180],
-                       "students_on_bus_range": [0, 72], "dry_day_precip_mm": 1.0},
+                       "students_on_bus_range": [0, 72], "dry_day_precip_mm": 1.0, "freezing_temp_c": 0.0},
         "routes_year": ROUTES, "site_codes": site_codes, "weather_daily": weather,
     }
 
@@ -102,14 +106,37 @@ def test_warning_rules_flag_but_keep_row_valid(rule, bad_row):
     assert df["is_valid"].all()
 
 
+def test_summer_incident_belongs_to_upcoming_school_year():
+    summer = {"start": date(2025, 7, 1), "end": date(2025, 7, 31)}
+    raw = pd.DataFrame([incident(1, occurred_on="2025-07-15T07:00:00.000", created_on="2025-07-15T07:05:00.000")],
+                       dtype="string")                                   # school_year "2025-2026"
+    df, _ = apply_rules(prepare_incidents(raw, ROUTES, SCHOOL_YEAR), {**ctx(), **summer})
+    assert df.loc[0, "failure_reasons"] == ""
+
+
 def test_breakdown_without_delay_is_not_flagged():
     df, _ = validate([incident(1, breakdown_or_running_late="Breakdown", how_long_delayed=None)])
     assert df.loc[0, "warning_reasons"] == ""
 
 
-def test_weather_reason_on_rainy_day_is_fine():
-    df, _ = validate([incident(1, reason="Weather Conditions")])          # 2025-10-08 had 12 mm
+@pytest.mark.parametrize("day", ["2025-10-08",     # 12 mm of rain
+                                 "2025-10-20",     # dry, but snow on the ground from previous days
+                                 "2025-10-24",     # dry, but freezing
+                                 "2025-10-30"])    # no weather row: no evidence against the vendor
+def test_weather_reason_supported(day):
+    df, _ = validate([incident(1, reason="Weather Conditions", occurred_on=f"{day}T07:00:00.000",
+                               created_on=f"{day}T07:05:00.000")])
     assert df.loc[0, "warning_reasons"] == ""
+
+
+def test_summer_attribution_ignores_route_contracts():
+    raw = pd.DataFrame([incident(1, route_number="K100", bus_company_name="BETA BUS"),    # K100 is AA's in the school year
+                        incident(2, route_number="K200", bus_company_name="SUMMER CO")], dtype="string")
+    df = prepare_incidents(raw, ROUTES, SCHOOL_YEAR, use_route_contracts=False)
+    assert df["vendor_source"].tolist() == ["name_match", "reported_name"]
+    assert df["vendor_code"].tolist()[0] == "BB"
+    df, _ = apply_rules(df, ctx())
+    assert "V09" not in ";".join(df["warning_reasons"])            # no contract to disagree with
 
 
 def test_rules_skip_when_supporting_source_missing():

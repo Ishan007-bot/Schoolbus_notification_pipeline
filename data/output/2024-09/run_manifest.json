@@ -1,0 +1,245 @@
+{
+  "run_id": "20260926T203312Z",
+  "period": "2024-09",
+  "school_year": "2024-2025",
+  "force": false,
+  "started_at": "2026-09-26T20:33:12+00:00",
+  "finished_at": "2026-09-26T20:33:14+00:00",
+  "status": "success",
+  "halted_stage": null,
+  "error": null,
+  "notes": [],
+  "scope_notes": [],
+  "code_version": {
+    "commit": "147a95e",
+    "dirty": true
+  },
+  "config_sha256": "0c5b9eb80e54df10",
+  "sources": {
+    "incidents": {
+      "source": "incidents",
+      "status": "reused",
+      "rows": 7314,
+      "raw_dir": "data/raw/incidents/2024-09/20260926T201713Z",
+      "checks": {
+        "row_count_matches": {
+          "passed": true,
+          "detail": "received 7314, expected 7314"
+        },
+        "no_duplicate_ids": {
+          "passed": true,
+          "detail": "0 duplicate ids"
+        },
+        "all_inside_month": {
+          "passed": true,
+          "detail": "0 rows outside 2024-09-01..2024-09-30"
+        },
+        "not_empty": {
+          "passed": true,
+          "detail": "7314 rows"
+        }
+      },
+      "message": "reused run 20260926T201713Z"
+    },
+    "routes": {
+      "source": "routes",
+      "status": "reused",
+      "rows": 10278,
+      "raw_dir": "data/raw/routes/2024-2025/20260926T194656Z",
+      "checks": {
+        "not_empty": {
+          "passed": true,
+          "detail": "13,066,973 bytes, 74,147 rows"
+        },
+        "expected_columns": {
+          "passed": true,
+          "detail": "all present"
+        },
+        "has_school_year": {
+          "passed": true,
+          "detail": "10278 rows for 2024-2025"
+        }
+      },
+      "message": "reused run 20260926T194656Z"
+    },
+    "sites": {
+      "source": "sites",
+      "status": "reused",
+      "rows": 6393,
+      "raw_dir": "data/raw/sites/2024-2025/20260926T194656Z",
+      "checks": {
+        "not_empty": {
+          "passed": true,
+          "detail": "5,041,006 bytes, 35,783 rows"
+        },
+        "expected_columns": {
+          "passed": true,
+          "detail": "all present"
+        },
+        "has_school_year": {
+          "passed": true,
+          "detail": "6393 rows for 2024-2025"
+        }
+      },
+      "message": "reused run 20260926T194656Z"
+    },
+    "weather": {
+      "source": "weather",
+      "status": "ok",
+      "rows": 792,
+      "raw_dir": "data/raw/weather/2024-09/20260926T203312Z",
+      "checks": {
+        "hour_count": {
+          "passed": true,
+          "detail": "792 hours, expected 792"
+        },
+        "precipitation_complete": {
+          "passed": true,
+          "detail": "0 missing values"
+        }
+      },
+      "message": ""
+    }
+  },
+  "validation": {
+    "rows": 7314,
+    "valid": 7314,
+    "critical_pct": 0.0,
+    "rules": {
+      "V01": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V02": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V03": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 3
+      },
+      "V04": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V05": {
+        "level": "critical",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V06": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V07": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V08": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 645
+      },
+      "V09": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V10": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 4
+      },
+      "V11": {
+        "level": "warning",
+        "status": "ok",
+        "rows_flagged": 0
+      },
+      "V12": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 2
+      },
+      "V13": {
+        "level": "warning",
+        "status": "flagged",
+        "rows_flagged": 26
+      }
+    },
+    "vendor_attribution": {
+      "routes": 6669,
+      "reported_name": 540,
+      "name_match": 105
+    },
+    "validated_path": "data/processed/incidents/2024-09/incidents_validated.parquet",
+    "report_path": "data/output/2024-09/quality_report_2024-09.csv"
+  },
+  "model": {
+    "period_rows": 7314,
+    "duplicates_skipped": 0,
+    "table_counts": {
+      "fact_incident": 7314,
+      "bridge_incident_site": 18211,
+      "dim_vendor": 51,
+      "dim_route": 10278,
+      "dim_site": 6393,
+      "dim_hour": 720,
+      "dim_reason": 10
+    },
+    "unmapped_reasons": [],
+    "checks": {
+      "fact_matches_validated": {
+        "passed": true,
+        "detail": "7314 loaded, 7314 expected"
+      },
+      "fact_not_empty": {
+        "passed": true,
+        "detail": "7314 rows"
+      },
+      "vendor_keys_resolve": {
+        "passed": true,
+        "detail": "0 unresolved"
+      },
+      "bridge_has_no_orphans": {
+        "passed": true,
+        "detail": "0 orphans"
+      },
+      "contract_routes_resolve": {
+        "passed": true,
+        "detail": "0 unresolved"
+      }
+    }
+  },
+  "metrics": {
+    "paths": {
+      "metrics": "data/output/2024-09/metrics_2024-09.csv",
+      "scorecard_csv": "data/output/2024-09/vendor_scorecard_2024-09.csv",
+      "scorecard_md": "data/output/2024-09/vendor_scorecard_2024-09.md"
+    },
+    "audit_list": [
+      "HOYT TRANSPORTATION CORP. [AP]",
+      "EMPIRE STATE BUS CORP. [EM]",
+      "EMPIRE CHARTER SERVICE INC [EQ]",
+      "THOMAS BUSES, INC. (B2321) [HT]",
+      "LITTLE LISA BUS CO. INC. [IL]",
+      "LITTLE RICHIE BUS SERVICE [LB]",
+      "LOGAN BUS COMPANY INC. [LG]",
+      "L & M BUS CORP (A) [LU]",
+      "MAR-CAN TRANSPORT CO. INC (B2192) [MW]",
+      "PRIDE TRANSPORTATION (SCH AGE) [PC]",
+      "PIONEER TRANSPORTATION CORP [PW]",
+      "QUALITY TRANSPORTATION CORP. [QL]"
+    ],
+    "vendors_ranked": 24,
+    "headline": {
+      "m1": 0.5057,
+      "m5": 0.9988
+    }
+  }
+}
