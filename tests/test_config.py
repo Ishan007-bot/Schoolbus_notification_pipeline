@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from src.config import load_config, month_bounds, school_year_for_month
+from src.config import load_config, month_bounds, month_range, school_year_for_month
 
 
 def test_school_year_autumn_starts_new_year():
@@ -28,3 +28,13 @@ def test_bad_month_rejected(bad):
 
 def test_config_has_all_four_sources():
     assert set(load_config()["sources"]) == {"incidents", "routes", "sites", "weather"}
+
+
+def test_month_range_crosses_year_end():
+    assert month_range("2025-11", "2026-02") == ["2025-11", "2025-12", "2026-01", "2026-02"]
+    assert month_range("2025-10", "2025-10") == ["2025-10"]
+
+
+def test_month_range_rejects_backwards():
+    with pytest.raises(ValueError):
+        month_range("2026-02", "2025-11")

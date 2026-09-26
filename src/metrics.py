@@ -53,8 +53,10 @@ def run_metrics(month, warehouse_path, cfg, output_root, run_status="success", r
              int(scorecard["ranked"].sum()), len(audited))
     for name in audited:
         log.info("  audit: %s", name)
+    headline = {metric_id.lower(): metric_value(system, metric_id, segment)
+                for metric_id, segment in [("M1", "all"), ("M5", "all")]}
     return {"paths": {k: str(v) for k, v in paths.items()}, "audit_list": audited,
-            "vendors_ranked": int(scorecard["ranked"].sum())}
+            "vendors_ranked": int(scorecard["ranked"].sum()), "headline": headline}
 
 
 def build_period_tables(con, month, mcfg):

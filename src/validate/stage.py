@@ -79,7 +79,10 @@ def run_validate(month, ingest_results, cfg, processed_root, output_root, now=No
                                   lambda p: df.to_parquet(p, index=False))
     sources = df["vendor_source"].value_counts().to_dict()
     log.info("vendor attribution: %s", ", ".join(f"{k}={v}" for k, v in sources.items()))
-    return {"rows": total, "valid": total - invalid, "critical_pct": critical_pct,
+    rules = {r.rule_id: {"level": r.level, "status": r.status, "rows_flagged": int(r.rows_flagged)}
+             for r in report.itertuples() if r.rule_id.startswith("V")}
+    return {"rows": total, "valid": total - invalid, "critical_pct": critical_pct, "rules": rules,
+            "vendor_attribution": {k: int(v) for k, v in sources.items()},
             "validated_path": str(validated_path), "report_path": str(report_path)}
 
 

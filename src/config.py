@@ -31,6 +31,19 @@ def month_bounds(month):
     return date(year, mon, 1), date(year, mon, calendar.monthrange(year, mon)[1])
 
 
+def month_range(first, last):
+    """'2025-11', '2026-02' -> ['2025-11', '2025-12', '2026-01', '2026-02']."""
+    y, m = parse_month(first)
+    end = parse_month(last)
+    if (y, m) > end:
+        raise ValueError(f"range start {first} is after end {last}")
+    months = []
+    while (y, m) <= end:
+        months.append(f"{y}-{m:02d}")
+        y, m = (y + 1, 1) if m == 12 else (y, m + 1)
+    return months
+
+
 def school_year_for_month(month):
     """NYC school years run September to August.
 

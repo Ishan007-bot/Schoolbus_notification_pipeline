@@ -29,7 +29,8 @@ REQUIRED_COLUMNS = {
 def ingest_reference(name, school_year, cfg, raw_root, run_id, force=False, get=http.get):
     previous = latest_success(raw_root, name, school_year)
 
-    if previous and not force:
+    # Reuse unless forced - but a --force backfill still downloads each school year only once per run.
+    if previous and (not force or previous[0].name == run_id):
         run_dir, meta = previous
         status = "reused" if meta["year_rows"] > 0 else "missing_year"
         log.info("%s: reusing download from run %s (%d rows for %s)", name, run_dir.name, meta["year_rows"], school_year)
