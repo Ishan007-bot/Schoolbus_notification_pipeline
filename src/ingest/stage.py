@@ -39,10 +39,10 @@ def run_ingest(month, cfg, raw_root, run_id, force=False, today=None):
     results["sites"] = ingest_reference("sites", school_year, cfg, raw_root, run_id, force)
     results["weather"] = ingest_weather(month, cfg, raw_root, run_id, force)
 
-    degraded = [name for name, r in results.items() if r.status in DEGRADED_STATUSES]
-    status = "degraded" if degraded or period_unfinished else "success"
-    for name in degraded:
-        log.warning("DEGRADED: %s -> %s (%s)", name, results[name].status, results[name].message)
+    notes = [f"{name}: {r.status} ({r.message})" for name, r in results.items() if r.status in DEGRADED_STATUSES]
     if period_unfinished:
-        log.warning("DEGRADED: period %s is not finished", month)
-    return status, results
+        notes.append(f"period {month} is not finished - counts are partial")
+    status = "degraded" if notes else "success"
+    for note in notes:
+        log.warning("DEGRADED: %s", note)
+    return status, results, notes

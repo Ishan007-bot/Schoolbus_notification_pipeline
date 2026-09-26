@@ -6,7 +6,6 @@ Usage:
 
 Exit codes: 0 = success or degraded, 1 = halted (critical source failed/incomplete, too many
 rows failing critical validation rules, or model integrity checks failed).
-Ingest, validate and model exist so far.
 """
 import argparse
 import logging
@@ -16,6 +15,7 @@ from datetime import datetime, timezone
 from src.config import REPO_ROOT, load_config, month_bounds, school_year_for_month
 from src.ingest.common import IngestError
 from src.ingest.stage import run_ingest
+from src.metrics import run_metrics
 from src.model import ModelError, run_model
 from src.utils.http import HTTPFailure
 from src.utils.logging_setup import setup_logging
@@ -42,7 +42,7 @@ def main(argv=None):
              run_id, args.month, start, end, school_year_for_month(args.month), args.force)
 
     try:
-        status, results = run_ingest(args.month, config, REPO_ROOT / config["paths"]["raw"], run_id, args.force)
+        status, results, notes = run_ingest(args.month, config, REPO_ROOT / config["paths"]["raw"], run_id, args.force)
     except (IngestError, HTTPFailure) as e:
         log.error("HALTED in ingest: %s", e)
         log.info("log: %s", log_path)
@@ -61,14 +61,16 @@ def main(argv=None):
         log.info("log: %s", log_path)
         return 1
 
+    warehouse = REPO_ROOT / config["paths"]["warehouse"]
     try:
-        run_model(args.month, results, validated["validated_path"], REPO_ROOT / config["paths"]["warehouse"])
+        run_model(args.month, results, validated["validated_path"], warehouse)
     except ModelError as e:
         log.error("HALTED in model (load rolled back): %s", e)
         log.info("log: %s", log_path)
         return 1
 
-    log.info("finished: %s | metrics stage not implemented yet | log: %s", status.upper(), log_path)
+    metrics = run_metrics(args.month, warehouse, config, REPO_ROOT / config["paths"]["output"], status, notes)
+    log.info("finished: %s | scorecard: %s | log: %s", status.upper(), metrics["paths"]["scorecard_md"], log_path)
     return 0
 
 

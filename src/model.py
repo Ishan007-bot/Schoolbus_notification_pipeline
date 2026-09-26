@@ -188,10 +188,13 @@ def integrity_checks(con, month, loaded):
     orphan_bridge = one("""SELECT count(*) FROM bridge_incident_site b
                            WHERE b.period = ? AND NOT EXISTS (SELECT 1 FROM fact_incident f
                                WHERE f.period = b.period AND f.busbreakdown_id = b.busbreakdown_id)""")
-    unresolved_routes = one("""SELECT count(*) FROM fact_incident f
+    # Vendors are attributed with the PERIOD's school year (a row's own school_year may be wrong - rule V04),
+    # so resolve against the same year here.
+    unresolved_routes = con.execute("""SELECT count(*) FROM fact_incident f
                                WHERE f.period = ? AND f.vendor_source = 'routes' AND NOT EXISTS (
                                    SELECT 1 FROM dim_route r
-                                   WHERE r.school_year = f.school_year AND r.route_number = f.route_number)""")
+                                   WHERE r.school_year = ? AND r.route_number = f.route_number)""",
+                                    [month, school_year_for_month(month)]).fetchone()[0]
     return {
         "fact_matches_validated": {"passed": loaded["inserted"] == expected,
                                    "detail": f"{loaded['inserted']} loaded, {expected} expected"},
