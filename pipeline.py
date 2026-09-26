@@ -1,20 +1,30 @@
 """Single entrypoint: ingest -> validate -> model -> metrics -> output.
 
 Usage:
-    python pipeline.py --month 2025-09
+    python pipeline.py --month 2025-10
+    python pipeline.py --month 2025-10 --force     # re-download even if a good pull exists
 
-Only argument parsing exists so far; each stage is added in later phases.
+Exit codes: 0 = success or degraded, 1 = halted (critical source failed or incomplete).
+Only the ingest stage exists so far; later stages are added in later phases.
 """
 import argparse
+import logging
 import sys
+from datetime import datetime, timezone
 
-from src.config import load_config, month_bounds, school_year_for_month
+from src.config import REPO_ROOT, load_config, month_bounds, school_year_for_month
+from src.ingest.common import IngestError
+from src.ingest.stage import run_ingest
+from src.utils.http import HTTPFailure
+from src.utils.logging_setup import setup_logging
+
+log = logging.getLogger("pipeline")
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="SilentDelay monthly pipeline")
     parser.add_argument("--month", required=True, help="month to process, YYYY-MM")
-    parser.add_argument("--force", action="store_true", help="re-pull raw data even if already downloaded")
+    parser.add_argument("--force", action="store_true", help="re-download sources even if a good pull exists")
     args = parser.parse_args(argv)
 
     try:
@@ -23,10 +33,22 @@ def main(argv=None):
         parser.error(str(e))
 
     config = load_config()
-    print(f"period       : {args.month} ({start} to {end})")
-    print(f"school year  : {school_year_for_month(args.month)}")
-    print(f"sources      : {', '.join(config['sources'])}")
-    print("stages       : not implemented yet")
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    log_path = setup_logging(run_id, REPO_ROOT / config["paths"]["logs"])
+    log.info("run %s | period %s (%s to %s) | school year %s | force=%s",
+             run_id, args.month, start, end, school_year_for_month(args.month), args.force)
+
+    try:
+        status, results = run_ingest(args.month, config, REPO_ROOT / config["paths"]["raw"], run_id, args.force)
+    except (IngestError, HTTPFailure) as e:
+        log.error("HALTED in ingest: %s", e)
+        log.info("log: %s", log_path)
+        return 1
+
+    log.info("%-10s %-13s %8s", "source", "status", "rows")
+    for name, r in results.items():
+        log.info("%-10s %-13s %8d", name, r.status, r.rows)
+    log.info("ingest finished: %s | later stages not implemented yet | log: %s", status.upper(), log_path)
     return 0
 
 
