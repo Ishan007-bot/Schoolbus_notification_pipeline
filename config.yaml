@@ -28,6 +28,7 @@ validation:
   max_logging_lag_hours: 24          # V03 warning
   delay_minutes_range: [1, 180]      # V07 warning
   students_on_bus_range: [0, 72]     # V10 warning
+  dry_day_precip_mm: 1.0             # V12: "weather" reason on a day with less rain than this and no snow
   reference_rowcount_tolerance_pct: 20
 
 metrics:

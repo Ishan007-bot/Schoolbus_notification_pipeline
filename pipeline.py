@@ -4,8 +4,8 @@ Usage:
     python pipeline.py --month 2025-10
     python pipeline.py --month 2025-10 --force     # re-download even if a good pull exists
 
-Exit codes: 0 = success or degraded, 1 = halted (critical source failed or incomplete).
-Only the ingest stage exists so far; later stages are added in later phases.
+Exit codes: 0 = success or degraded, 1 = halted (critical source failed/incomplete, or too many
+rows failing critical validation rules). Ingest and validate exist so far.
 """
 import argparse
 import logging
@@ -17,6 +17,7 @@ from src.ingest.common import IngestError
 from src.ingest.stage import run_ingest
 from src.utils.http import HTTPFailure
 from src.utils.logging_setup import setup_logging
+from src.validate.stage import ValidationHalt, run_validate
 
 log = logging.getLogger("pipeline")
 
@@ -48,7 +49,17 @@ def main(argv=None):
     log.info("%-10s %-13s %8s", "source", "status", "rows")
     for name, r in results.items():
         log.info("%-10s %-13s %8d", name, r.status, r.rows)
-    log.info("ingest finished: %s | later stages not implemented yet | log: %s", status.upper(), log_path)
+    log.info("ingest finished: %s", status.upper())
+
+    try:
+        run_validate(args.month, results, config, REPO_ROOT / config["paths"]["processed"],
+                     REPO_ROOT / config["paths"]["output"])
+    except ValidationHalt as e:
+        log.error("HALTED in validate: %s", e)
+        log.info("log: %s", log_path)
+        return 1
+
+    log.info("finished: %s | model/metrics stages not implemented yet | log: %s", status.upper(), log_path)
     return 0
 
 
