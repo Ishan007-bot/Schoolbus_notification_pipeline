@@ -84,9 +84,100 @@ self-reporting.
 | [Open-Meteo historical weather](https://open-meteo.com/en/docs/historical-weather-api) | Open-Meteo | REST API | one hour |
 | [Reason categories](reference/reason_categories.csv) | This project | CSV (hand-built) | one delay reason |
 
-Ownership, gaps and join decisions: [docs/source_map.md](docs/source_map.md).
+How the sources join:
+
+```mermaid
+flowchart LR
+    S1["Incidents<br/>1 row = 1 incident"] -- "route_number + school year" --> S2["Routes<br/>1 row = 1 route per year"]
+    S2 -- "Vendor_Code" --> V["Vendor"]
+    S1 -- "schools_serviced, split into a list" --> B["Bridge<br/>1 row = incident x school"]
+    B -- "OPT_Code + school year" --> S3["Sites<br/>1 row = 1 site per year"]
+    S1 -- "occurred_on, by hour" --> S4["Weather<br/>1 row = 1 hour"]
+    S1 -- "reason" --> R1["Reason categories"]
+```
+
+The vendor comes from the route number (OPT's contract data), not the company name typed into the report.
+Ownership, gaps and the other join decisions: [docs/source_map.md](docs/source_map.md).
+
+## Workflow and data model
+
+Every incident follows the same lifecycle. The first three steps have a timestamp; the outcome is the delay and
+the number of students on board.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Occurred: bus breaks down or runs late (occurred_on)
+    Occurred --> Logged: vendor staff enter the report (created_on)
+    Logged --> Notified: school / parents / OPT told (Yes/No flags)
+    Logged --> NotNotified: flags = No
+    Notified --> Outcome
+    NotNotified --> Outcome
+    Outcome --> [*]: delay bucket x students on board
+```
+
+The incidents are modelled as a star schema in DuckDB (key columns shown; full version in
+[docs/data_model.md](docs/data_model.md)):
+
+```mermaid
+erDiagram
+    fact_incident ||--o{ bridge_incident_site : "serves"
+    bridge_incident_site }o--|| dim_site : ""
+    fact_incident }o--|| dim_vendor : "attributed to"
+    dim_route }o--|| dim_vendor : "contracted to"
+    fact_incident }o--o| dim_hour : "occurred in"
+    fact_incident }o--o| dim_reason : "because of"
+
+    fact_incident {
+        string busbreakdown_id PK
+        string period PK
+        string vendor_key FK
+        string reason FK
+        timestamp occurred_on
+        double delay_est
+        boolean notified_parents
+        boolean is_valid
+    }
+    bridge_incident_site {
+        string busbreakdown_id PK
+        string opt_code PK
+    }
+    dim_vendor {
+        string vendor_key PK
+        string vendor_name
+        boolean in_contract_data
+    }
+    dim_route {
+        string route_number PK
+        string school_year PK
+        string vendor_code
+    }
+    dim_site {
+        string opt_code PK
+        string school_year PK
+        string borough
+    }
+    dim_hour {
+        timestamp hour PK
+        double precipitation_mm
+        double snowfall_cm
+    }
+    dim_reason {
+        string reason PK
+        string category
+    }
+```
 
 ## How it works
+
+```mermaid
+flowchart LR
+    I["1. INGEST<br/>4 sources, raw saved<br/>completeness checks"] --> V["2. VALIDATE<br/>13 rules, flag don't fix<br/>quality report"]
+    V --> M["3. MODEL<br/>star schema in DuckDB<br/>one transaction + integrity checks"]
+    M --> K["4. METRICS<br/>M1-M5, audit rule<br/>scorecard"]
+    I -. "critical source fails" .-> H(["HALT"])
+    V -. "more than 25% critical failures" .-> H
+    M -. "integrity check fails: rollback" .-> H
+```
 
 | Stage | What happens | Details |
 |---|---|---|
