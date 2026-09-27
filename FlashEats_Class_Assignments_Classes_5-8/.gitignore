@@ -1,0 +1,11 @@
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Jupyter autosaves
+.ipynb_checkpoints/
+
+# Local environment / secrets (config/.env.example is the committed template)
+.env
+.venv/
+venv/
